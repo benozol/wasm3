@@ -672,7 +672,9 @@ m3ApiRawFunction(m3_wasi_generic_random_get)
     while (1) {
         ssize_t retlen = 0;
 
-#if defined(__wasi__) || defined(__APPLE__) || defined(__ANDROID_API__) || defined(__OpenBSD__) || defined(__EMSCRIPTEN__)
+#if defined(__ANDROID_API__) // FIXME getrandom/getentropy only for API>=28
+        m3ApiReturn(__WASI_ENOSYS);
+#elif defined(__wasi__) || defined(__APPLE__) || defined(__OpenBSD__) || defined(__EMSCRIPTEN__)
         size_t reqlen = M3_MIN (buf_len, 256);
 #   if defined(__APPLE__) && (TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR)
         retlen = SecRandomCopyBytes(kSecRandomDefault, reqlen, buf) < 0 ? -1 : reqlen;
